@@ -1,0 +1,154 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context=".DemoPos">
+
+
+
+    <Button
+        android:id="@+id/adjust"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Hit me to  Calibrate manually"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="false" />
+
+
+    <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/banner"
+        android:layout_above="@+id/connection_state"
+        android:src="@drawable/upper"
+        android:layout_alignParentStart="true"
+        android:layout_margin="50dp" />
+
+
+    <TextView
+        android:id="@+id/banner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Connect to BT Sensor First"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_below="@+id/sensView"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:id="@+id/label"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Welcome to this awesome demo:"
+        android:layout_above="@+id/adjust"
+        android:layout_alignParentStart="true" />
+    <TextView
+        android:id="@+id/connection_state"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="disconnected"
+        android:layout_above="@+id/label"
+        android:layout_alignParentStart="true"
+        android:layout_toStartOf="@+id/sensView" />
+
+    <TextView android:id="@+id/device_address"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Use this slider to adjust sensitivity." />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageView"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/banner"
+        android:layout_above="@+id/connection_state"
+        android:src="@drawable/lower"
+        android:contentDescription="image of a little girl"
+        android:layout_margin="50dp" />
+
+    <SeekBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/seekBar"
+        android:layout_below="@+id/device_address"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Sensitivity: "
+        android:id="@+id/sensView"
+        android:layout_below="@+id/seekBar"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:id="@+id/batterLevel"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/batteryLevel"
+        android:layout_toStartOf="@+id/sensView"
+        android:layout_toEndOf="@+id/connection_state"
+        android:layout_above="@+id/label"
+        android:layout_alignParentEnd="true" />
+
+    <TextView
+        android:id="@+id/textAngle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Angle: 0°"
+        android:layout_alignBottom="@+id/imageView1"
+        android:layout_centerHorizontal="true" />
+
+    <!--<Button-->
+        <!--style="?android:attr/buttonStyleSmall"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="Stand"-->
+        <!--android:id="@+id/stand"-->
+        <!--android:layout_below="@+id/banner"-->
+        <!--android:layout_alignParentStart="true"-->
+        <!--android:layout_alignEnd="@+id/sit" />-->
+
+    <!--<Button-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="Sit"-->
+        <!--android:id="@+id/sit"-->
+        <!--android:layout_below="@+id/stand"-->
+        <!--android:layout_alignParentStart="true" />-->
+
+    <!--<Button-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="Walk"-->
+        <!--android:id="@+id/walk"-->
+        <!--android:layout_below="@+id/sit"-->
+        <!--android:layout_alignParentStart="true" />-->
+
+    <!--<Button-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="Reset"-->
+        <!--android:id="@+id/reset"-->
+        <!--android:layout_alignBottom="@+id/imageView1"-->
+        <!--android:layout_alignParentStart="true" />-->
+
+    <!--<TextView-->
+        <!--android:id="@+id/activity"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:textAppearance="?android:attr/textAppearanceLarge"-->
+        <!--android:text="Unkown"-->
+        <!--android:layout_marginRight="@dimen/activity_horizontal_margin"-->
+        <!--android:textColor="#ffcf3691"-->
+        <!--android:layout_above="@+id/sit"-->
+        <!--android:layout_alignEnd="@+id/seekBar" />-->
+
+</RelativeLayout>
