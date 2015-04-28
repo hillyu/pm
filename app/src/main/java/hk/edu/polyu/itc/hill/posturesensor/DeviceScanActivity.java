@@ -18,12 +18,14 @@ package hk.edu.polyu.itc.hill.posturesensor;
 
 import android.app.Activity;
 import android.app.ListActivity;
+import 	android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.LayoutInflater;
@@ -83,6 +85,8 @@ public class DeviceScanActivity extends ListActivity {
 //        LayoutInflater inflater = getLayoutInflater();
 //        View header = inflater.inflate(R.layout.header, lv, false);
 //        lv.addHeaderView(header, null, false);
+
+
     }
 
     @Override
@@ -132,6 +136,21 @@ public class DeviceScanActivity extends ListActivity {
         mLeDeviceListAdapter = new LeDeviceListAdapter();
         setListAdapter(mLeDeviceListAdapter);
         scanLeDevice(true);
+        
+        //instruction using alert:
+        AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
+        builder1.setMessage(R.string.instruction);
+        builder1.setCancelable(true);
+        builder1.setPositiveButton("I understand",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+
+
+        AlertDialog alert11 = builder1.create();
+        alert11.show();
     }
 
     @Override

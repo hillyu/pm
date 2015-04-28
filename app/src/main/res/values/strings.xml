@@ -40,4 +40,7 @@
     <string name="dangerPos">Danger! Keep straight right now!</string>
     <string name="systemError">Opps, something is wrong here, adjust your device first!</string>
     <string name="batteryLevel">Batter Level:</string>
+
+    <!-- instructions -->
+    <string name="instruction">Make sure the sensor has been switched on. Then select &quot;pMon&quot; in the list . You can press &quot;Scan&quot; on the upper right corner if no sensor has been found. </string>
 </resources>
