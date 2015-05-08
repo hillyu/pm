@@ -33,6 +33,7 @@
     <string name="menu_disconnect">Disconnect</string>
     <string name="menu_scan">Scan</string>
     <string name="menu_stop">Stop</string>
+    <string name="menu_confirm">Confirm</string>
     <!--  posNotification -->
     <string name="initial">Calibrating, please wait...</string>
     <string name="goodPos">Good, keep up the good work!</string>

@@ -53,6 +53,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.Date;
 import java.text.SimpleDateFormat;
@@ -81,6 +82,8 @@ public class DeviceControlActivity extends Activity {
     private TextView mDataField;
     private String mDeviceName;
     private String mDeviceAddress;
+    private Map<String,String> mDevice;//use mDeviceAddress as key and mDeviceName as value(optional
+    //key should be unique.
 //    private ExpandableListView mGattServicesList;
     private BluetoothLeService mBluetoothLeService;
     private ArrayList<ArrayList<BluetoothGattCharacteristic>> mGattCharacteristics =
@@ -700,10 +703,12 @@ public class DeviceControlActivity extends Activity {
         mHandler = new Handler();
 
         final Intent intent = getIntent();
-        mDeviceName = intent.getStringExtra(EXTRAS_DEVICE_NAME);
-        mDeviceAddress = intent.getStringExtra(EXTRAS_DEVICE_ADDRESS);
+//        mDeviceName = intent.getStringExtra(EXTRAS_DEVICE_NAME); //TODO: may consider later, each device use a unique name.
+//        mDeviceAddress = intent.getStringExtra(EXTRAS_DEVICE_ADDRESS);
+        mDeviceAddress = intent.getStringArrayListExtra(EXTRAS_DEVICE_ADDRESS).get(0);
+        mDeviceName = intent.getStringArrayListExtra(EXTRAS_DEVICE_NAME).get(0);
 
-        psOld = posState.INIT;//should equal to ps;
+                psOld = posState.INIT;//should equal to ps;
         ps=posState.INIT;
 
         // Sets up UI references.

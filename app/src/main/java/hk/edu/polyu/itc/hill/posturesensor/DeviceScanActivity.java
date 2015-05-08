@@ -33,11 +33,17 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CheckedTextView;
+import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 /**
@@ -48,6 +54,9 @@ public class DeviceScanActivity extends ListActivity {
     private BluetoothAdapter mBluetoothAdapter;
     private boolean mScanning;
     private Handler mHandler;
+    private ArrayList<String> mDeviceName = new ArrayList<String>();
+    private ArrayList<String> mDeviceAddrs = new ArrayList<String> ();
+
 
     private static final int REQUEST_ENABLE_BT = 1;
     // Stops scanning after 10 seconds.
@@ -56,6 +65,7 @@ public class DeviceScanActivity extends ListActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.device_scan);
         getActionBar().setTitle(R.string.title_devices);
         mHandler = new Handler();
 
@@ -86,6 +96,13 @@ public class DeviceScanActivity extends ListActivity {
 //        View header = inflater.inflate(R.layout.header, lv, false);
 //        lv.addHeaderView(header, null, false);
 
+//
+//        final String[] list = {"wrenches","hammers","drills","screwdrivers","saws","chisels","fasteners"};
+//
+//        // Initializing An ArrayAdapter Object for the ListActivity
+//        final ArrayAdapter<String> adapter = new ArrayAdapter<String> (this, android.R.layout.simple_list_item_multiple_choice, list);
+
+
 
     }
 
@@ -95,10 +112,12 @@ public class DeviceScanActivity extends ListActivity {
         if (!mScanning) {
             menu.findItem(R.id.menu_stop).setVisible(false);
             menu.findItem(R.id.menu_scan).setVisible(true);
-            menu.findItem(R.id.menu_refresh).setActionView(null);
+            menu.findItem(R.id.menu_refresh).setVisible(true);
+            menu.findItem(R.id.menu_confirm).setActionView(null);
         } else {
             menu.findItem(R.id.menu_stop).setVisible(true);
             menu.findItem(R.id.menu_scan).setVisible(false);
+            menu.findItem(R.id.menu_confirm).setVisible(false);
             menu.findItem(R.id.menu_refresh).setActionView(
                     R.layout.actionbar_indeterminate_progress);
         }
@@ -114,6 +133,34 @@ public class DeviceScanActivity extends ListActivity {
                 break;
             case R.id.menu_stop:
                 scanLeDevice(false);
+                break;
+            case R.id.menu_confirm:
+                final Intent intent = new Intent(this, DeviceControlActivity.class);
+                for (int j = mLeDeviceListAdapter.getCount()-1; j>=0; j--){
+                    if (mLeDeviceListAdapter.isChecked.get(j)){
+                        mDeviceName.add(mLeDeviceListAdapter.getDevice(j).getName());
+                        mDeviceAddrs.add(mLeDeviceListAdapter.getDevice(j).getAddress());
+                    }
+                }
+                if(!mDeviceAddrs.isEmpty()){
+                intent.putExtra(DeviceControlActivity.EXTRAS_DEVICE_NAME, mDeviceName);
+                intent.putExtra(DeviceControlActivity.EXTRAS_DEVICE_ADDRESS, mDeviceAddrs);
+                startActivity(intent);}
+                else{
+                    AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
+                    builder1.setMessage(R.string.instruction);
+                    builder1.setCancelable(true);
+                    builder1.setPositiveButton("I understand",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    dialog.cancel();
+                                }
+                            });
+
+
+                    AlertDialog alert11 = builder1.create();
+                    alert11.show();
+                }
                 break;
         }
         return true;
@@ -134,9 +181,19 @@ public class DeviceScanActivity extends ListActivity {
 
         // Initializes list view adapter.
         mLeDeviceListAdapter = new LeDeviceListAdapter();
+
         setListAdapter(mLeDeviceListAdapter);
+
+        //testing code:
+//        final String[] list = {"wrenches","hammers","drills","screwdrivers","saws","chisels","fasteners"};
+
+        // Initializing An ArrayAdapter Object for the ListActivity
+//        final ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_multiple_choice, list);
+//        setListAdapter(adapter);
+        //testing codeend.
+
         scanLeDevice(true);
-        
+
         //instruction using alert:
         AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
         builder1.setMessage(R.string.instruction);
@@ -171,18 +228,28 @@ public class DeviceScanActivity extends ListActivity {
     }
 
     @Override
-    protected void onListItemClick(ListView l, View v, int position, long id) {
+    protected void onListItemClick(ListView l, View v, int position, long id) {// TODO: Not working after adding checkbox.
         final BluetoothDevice device = mLeDeviceListAdapter.getDevice(position);
         if (device == null) return;
-        final Intent intent = new Intent(this, DeviceControlActivity.class);
-        intent.putExtra(DeviceControlActivity.EXTRAS_DEVICE_NAME, device.getName());
-        intent.putExtra(DeviceControlActivity.EXTRAS_DEVICE_ADDRESS, device.getAddress());
-        if (mScanning) {
-            mBluetoothAdapter.stopLeScan(mLeScanCallback);
-            mScanning = false;
-        }
-        startActivity(intent);
+
+
+//        final Intent intent = new Intent(this, DeviceControlActivity.class);
+//        intent.putExtra(DeviceControlActivity.EXTRAS_DEVICE_NAME, device.getName());
+//        intent.putExtra(DeviceControlActivity.EXTRAS_DEVICE_ADDRESS, device.getAddress());
+
+
+
+
+//    mDeviceName.add(device.getName());
+//    mDeviceAddrs.add(device.getAddress());
+    if (mScanning) {
+        mBluetoothAdapter.stopLeScan(mLeScanCallback);
+        mScanning = false;
     }
+}
+
+        //startActivity(intent);
+
 
     private void scanLeDevice(final boolean enable) {
         if (enable) {
@@ -209,16 +276,19 @@ public class DeviceScanActivity extends ListActivity {
     private class LeDeviceListAdapter extends BaseAdapter {
         private ArrayList<BluetoothDevice> mLeDevices;
         private LayoutInflater mInflator;
+        private ArrayList<Boolean> isChecked;
 
         public LeDeviceListAdapter() {
             super();
             mLeDevices = new ArrayList<BluetoothDevice>();
             mInflator = DeviceScanActivity.this.getLayoutInflater();
+            isChecked =new ArrayList<Boolean>();
         }
 
         public void addDevice(BluetoothDevice device) {
             if(!mLeDevices.contains(device)) {
                 mLeDevices.add(device);
+                isChecked.add(false);// intial the status to unchecked.
             }
         }
 
@@ -246,18 +316,31 @@ public class DeviceScanActivity extends ListActivity {
         }
 
         @Override
-        public View getView(int i, View view, ViewGroup viewGroup) {
+        public View getView( final int i, View view, ViewGroup viewGroup) {
             ViewHolder viewHolder;
             // General ListView optimization code.
             if (view == null) {
-                view = mInflator.inflate(R.layout.listitem_device, null);
+                view = mInflator.inflate(R.layout.listitem_device,null );
                 viewHolder = new ViewHolder();
                 viewHolder.deviceAddress = (TextView) view.findViewById(R.id.device_address);
                 viewHolder.deviceName = (TextView) view.findViewById(R.id.device_name);
+                viewHolder.deviceSelectionStatus = (CheckBox) view.findViewById(R.id.checkBox);
+
+
+                viewHolder.deviceSelectionStatus.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean state) {
+
+                        isChecked.set(i,state); // Set the value of checkbox to maintain its state.
+                    }
+                });
+
                 view.setTag(viewHolder);
             } else {
                 viewHolder = (ViewHolder) view.getTag();
             }
+
 
             BluetoothDevice device = mLeDevices.get(i);
             final String deviceName = device.getName();
@@ -290,5 +373,6 @@ public class DeviceScanActivity extends ListActivity {
     static class ViewHolder {
         TextView deviceName;
         TextView deviceAddress;
+        CheckBox deviceSelectionStatus;
     }
 }
