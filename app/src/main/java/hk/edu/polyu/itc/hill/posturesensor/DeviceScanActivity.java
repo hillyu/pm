@@ -137,14 +137,15 @@ public class DeviceScanActivity extends ListActivity {
             case R.id.menu_confirm:
                 final Intent intent = new Intent(this, DeviceControlActivity.class);
                 for (int j = mLeDeviceListAdapter.getCount()-1; j>=0; j--){
-                    if (mLeDeviceListAdapter.isChecked.get(j)){
+                    if (mLeDeviceListAdapter.getDevice(j).isSelected()){
                         mDeviceName.add(mLeDeviceListAdapter.getDevice(j).getName());
                         mDeviceAddrs.add(mLeDeviceListAdapter.getDevice(j).getAddress());
+
                     }
                 }
                 if(!mDeviceAddrs.isEmpty()){
-                intent.putExtra(DeviceControlActivity.EXTRAS_DEVICE_NAME, mDeviceName);
-                intent.putExtra(DeviceControlActivity.EXTRAS_DEVICE_ADDRESS, mDeviceAddrs);
+                intent.putStringArrayListExtra(DeviceControlActivity.EXTRAS_DEVICE_NAME, mDeviceName);
+                intent.putStringArrayListExtra(DeviceControlActivity.EXTRAS_DEVICE_ADDRESS, mDeviceAddrs);
                 startActivity(intent);}
                 else{
                     AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
@@ -229,8 +230,8 @@ public class DeviceScanActivity extends ListActivity {
 
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {// TODO: Not working after adding checkbox.
-        final BluetoothDevice device = mLeDeviceListAdapter.getDevice(position);
-        if (device == null) return;
+//        final BluetoothDeviceWrapper device = mLeDeviceListAdapter.getDevice(position);
+//        if (device == null) return;
 
 
 //        final Intent intent = new Intent(this, DeviceControlActivity.class);
@@ -274,25 +275,33 @@ public class DeviceScanActivity extends ListActivity {
 
     // Adapter for holding devices found through scanning.
     private class LeDeviceListAdapter extends BaseAdapter {
-        private ArrayList<BluetoothDevice> mLeDevices;
+        private ArrayList<BluetoothDeviceWrapper> mLeDevices;
+//        private ArrayList<BluetoothDeviceWrapper> mWrappers;
         private LayoutInflater mInflator;
-        private ArrayList<Boolean> isChecked;
+//        private ArrayList<Boolean> isChecked;
 
         public LeDeviceListAdapter() {
             super();
-            mLeDevices = new ArrayList<BluetoothDevice>();
+            mLeDevices = new ArrayList<BluetoothDeviceWrapper>();
+//            mWrappers = new ArrayList<BluetoothDeviceWrapper>();
             mInflator = DeviceScanActivity.this.getLayoutInflater();
-            isChecked =new ArrayList<Boolean>();
+//            isChecked =new ArrayList<Boolean>();
         }
 
-        public void addDevice(BluetoothDevice device) {
+        public void addDevice(BluetoothDeviceWrapper device) {
+
             if(!mLeDevices.contains(device)) {
+//                BluetoothDeviceWrapper wrapperDevice = new BluetoothDeviceWrapper(device,false);
                 mLeDevices.add(device);
-                isChecked.add(false);// intial the status to unchecked.
+//                mWrappers.add(wrapperDevice);
             }
         }
 
-        public BluetoothDevice getDevice(int position) {
+//        public BluetoothDeviceWrapper getWrapperDevice(int position) {
+//            return mWrappers.get(position);
+//        }
+
+        public BluetoothDeviceWrapper getDevice(int position) {
             return mLeDevices.get(position);
         }
 
@@ -325,30 +334,36 @@ public class DeviceScanActivity extends ListActivity {
                 viewHolder.deviceAddress = (TextView) view.findViewById(R.id.device_address);
                 viewHolder.deviceName = (TextView) view.findViewById(R.id.device_name);
                 viewHolder.deviceSelectionStatus = (CheckBox) view.findViewById(R.id.checkBox);
+                view.setTag(viewHolder);
 
 
                 viewHolder.deviceSelectionStatus.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 
                     @Override
                     public void onCheckedChanged(CompoundButton buttonView, boolean state) {
+                        CompoundButton cb = buttonView;
+                        BluetoothDeviceWrapper btDevice = (BluetoothDeviceWrapper) cb.getTag();
+                        btDevice.setSelected(cb.isChecked());
 
-                        isChecked.set(i,state); // Set the value of checkbox to maintain its state.
                     }
                 });
 
-                view.setTag(viewHolder);
+
             } else {
                 viewHolder = (ViewHolder) view.getTag();
             }
 
 
-            BluetoothDevice device = mLeDevices.get(i);
+            BluetoothDeviceWrapper device = mLeDevices.get(i);
             final String deviceName = device.getName();
             if (deviceName != null && deviceName.length() > 0)
                 viewHolder.deviceName.setText(deviceName);
             else
                 viewHolder.deviceName.setText(R.string.unknown_device);
             viewHolder.deviceAddress.setText(device.getAddress());
+
+//            viewHolder.deviceSelectionStatus.setChecked(device.isSelected());
+            viewHolder.deviceSelectionStatus.setTag(device);
 
             return view;
         }
@@ -360,10 +375,11 @@ public class DeviceScanActivity extends ListActivity {
 
         @Override
         public void onLeScan(final BluetoothDevice device, int rssi, byte[] scanRecord) {
+            final BluetoothDeviceWrapper mWrapperDevice = new BluetoothDeviceWrapper(device, false);
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    mLeDeviceListAdapter.addDevice(device);
+                    mLeDeviceListAdapter.addDevice(mWrapperDevice);
                     mLeDeviceListAdapter.notifyDataSetChanged();
                 }
             });
