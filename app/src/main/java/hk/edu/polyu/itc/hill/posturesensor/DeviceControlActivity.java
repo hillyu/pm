@@ -22,6 +22,7 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothGattCharacteristic;
+import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -76,6 +77,9 @@ public class DeviceControlActivity extends Activity {
     private static final int MPU_TIMEOUT =10;
     private static final int BMP_TIMEOUT =100;
     private static final int BATTERY_TIMEOUT =1000;
+
+    //uuid
+    final static private UUID nrf_mpu_notify_Characteristic = UUID.fromString(SampleGattAttributes.UUID_POSTURE_SENSING_DATA_STREAM_NRF51);
 
     private TextView mConnectionState;
     private TextView mDataField;
@@ -185,7 +189,7 @@ public class DeviceControlActivity extends Activity {
         @Override
         public void run()
         {
-            if(mConnected )
+            if(mConnected && mSensorDataCharacterstic != null)
             mBluetoothLeService.readCharacteristic(mSensorDataCharacterstic); // reading mpu6050.
         }
     };
@@ -261,12 +265,12 @@ public class DeviceControlActivity extends Activity {
                         adjust();
                         timer_InitAdjust = 100; //reset the timer so it will never be triggered again after initfinish.
                     }
-                    if (timer_BMP == 0) {
+                    if (timer_BMP == 0 && mBMPDataCharacteristic != null) {
 
                         mBluetoothLeService.readCharacteristic(mBMPDataCharacteristic);
                         //reset a timer to limit the BMP_DATA refresh;
                         timer_BMP = BMP_TIMEOUT;
-                    } else if (timer_BATTERY == 0) {
+                    } else if (timer_BATTERY == 0 && mBatterInfoCharacteristic != null) {
 
                         mBluetoothLeService.readCharacteristic(mBatterInfoCharacteristic);
                         //Log.e(TAG, "Battery Requested.");
@@ -312,7 +316,7 @@ public class DeviceControlActivity extends Activity {
                     batteryLevel.setText("Batter Level: " + intent.getIntExtra(BluetoothLeService.BATTERY_DATA,0)+"%");
                     //Handler myHandler = new Handler();
                     //myHandler.postDelayed(requestMPU6050, 10);
-                    mBluetoothLeService.readCharacteristic(mSensorDataCharacterstic);
+                    if (mSensorDataCharacterstic != null){mBluetoothLeService.readCharacteristic(mSensorDataCharacterstic);}
                 }
                 //set a time counting the sensor data reading operation. This time is used to adjust how often we write the data storage.
                 if (timer_writeData == 0){
@@ -812,6 +816,7 @@ public class DeviceControlActivity extends Activity {
 
         getActionBar().setTitle(mDeviceName);
         getActionBar().setDisplayHomeAsUpEnabled(true);
+
         Intent gattServiceIntent = new Intent(this, BluetoothLeService.class);
         bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
 
@@ -895,6 +900,17 @@ public class DeviceControlActivity extends Activity {
 //                    mBluetoothLeService.readCharacteristic(mSensorDataCharacterstic);
 
                     mHandler.postDelayed(requestBMP, 0); //schedual another read after 1s.
+                }
+                if (gattCharacteristic.getUuid().equals(nrf_mpu_notify_Characteristic)){
+                    //set upnotification.
+                    BluetoothGattService mNRFService = gattService;
+
+                        final BluetoothGattCharacteristic mNRF_MPU_NOTIFY_Characteristic = mNRFService.getCharacteristic(nrf_mpu_notify_Characteristic);
+                        mBluetoothLeService.setCharacteristicNotification(mNRF_MPU_NOTIFY_Characteristic, true);
+                        //standard descriptor setting. needed as documentation specified. is inclused in wrapper class.
+
+
+
                 }
 
                 if ( gattCharacteristic.getUuid().equals(UUID.fromString(SampleGattAttributes.UUID_BATTERY_LEVEL))) {
