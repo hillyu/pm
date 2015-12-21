@@ -349,7 +349,7 @@ public class DeviceControlActivity extends Activity {
         offsetQuat = offsetQuatReg;
 
         mHandler.post(writeBeacon);
-       ps = posState.GOOD;//kick it into good state after adjust. w
+       ps = posState.GOOD;//kick it into good state after adjust.
     }
 
 
@@ -479,10 +479,9 @@ public class DeviceControlActivity extends Activity {
 
                     dos.write(0xAA);//header
                     dos.writeLong(tsLong);
-                    dos.writeShort(qw);
-                    dos.writeShort(qx);
-                    dos.writeShort(qy);
-                    dos.writeShort(qz);
+                    dos.writeShort(x);
+                    dos.writeShort(y);
+                    dos.writeShort(z);
                     dos.write(0x0a);//tail total 32
 
 
