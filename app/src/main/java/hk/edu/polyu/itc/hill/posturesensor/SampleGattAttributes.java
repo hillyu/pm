@@ -25,6 +25,7 @@ public class SampleGattAttributes {
     private static HashMap<String, String> attributes = new HashMap();
     //Edit by Hill
     public static String UUID_POSTURE_SENSING_DATA_STREAM = "0000ffb6-0000-1000-8000-00805f9b34fb";
+    public static String UUID_POSTURE_SENSING_DATA_STREAM_NRF51 = "6E400003-B5A3-F393-E0A9-E50E24DCCA9E";
     public static String UUID_POSTURE_SENSING_CONTROL = "0000ffe9-0000-1000-8000-00805f9b34fb";
     public static String UUID_BATTERY_LEVEL = "00002a19-0000-1000-8000-00805f9b34fb";
     public static String UUID_BMP = "0000ffb7-0000-1000-8000-00805f9b34fb";
